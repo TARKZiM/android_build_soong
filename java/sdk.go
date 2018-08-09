@@ -143,7 +143,7 @@ func decodeSdkDep(ctx android.EarlyModuleContext, sdkContext android.SdkContext)
 		}
 	}
 
-	toModule := func(module string, aidl android.Path) sdkDep {
+	toModule := func(module string, lineageRes string, aidl android.Path) sdkDep {
 		// Select the kind of system modules needed for the sdk version.
 		systemModulesKind := systemModuleKind(sdkVersion.Kind, android.FutureApiLevel)
 		return sdkDep{
@@ -152,6 +152,7 @@ func decodeSdkDep(ctx android.EarlyModuleContext, sdkContext android.SdkContext)
 			systemModules:      fmt.Sprintf("core-%s-stubs-system-modules", systemModulesKind),
 			java9Classpath:     []string{module},
 			frameworkResModule: "framework-res",
+			lineageResModule:   lineageRes,
 			aidl:               android.OptionalPathForPath(aidl),
 		}
 	}
@@ -164,6 +165,7 @@ func decodeSdkDep(ctx android.EarlyModuleContext, sdkContext android.SdkContext)
 			bootclasspath:      corePlatformBootclasspathLibraries(ctx),
 			classpath:          config.FrameworkLibraries,
 			frameworkResModule: "framework-res",
+			lineageResModule:   "org.lineageos.platform-res",
 		}
 	case android.SdkNone:
 		systemModules := sdkContext.SystemModules()
@@ -190,11 +192,11 @@ func decodeSdkDep(ctx android.EarlyModuleContext, sdkContext android.SdkContext)
 			noFrameworksLibs: true,
 		}
 	case android.SdkPublic:
-		return toModule("android_stubs_current", sdkFrameworkAidlPath(ctx))
+		return toModule("android_stubs_current", "org.lineageos.platform-res", sdkFrameworkAidlPath(ctx))
 	case android.SdkSystem:
-		return toModule("android_system_stubs_current", sdkFrameworkAidlPath(ctx))
+		return toModule("android_system_stubs_current", "org.lineageos.platform-res", sdkFrameworkAidlPath(ctx))
 	case android.SdkTest:
-		return toModule("android_test_stubs_current", sdkFrameworkAidlPath(ctx))
+		return toModule("android_test_stubs_current", "org.lineageos.platform-res", sdkFrameworkAidlPath(ctx))
 	case android.SdkCore:
 		return sdkDep{
 			useModule:        true,
@@ -204,10 +206,10 @@ func decodeSdkDep(ctx android.EarlyModuleContext, sdkContext android.SdkContext)
 		}
 	case android.SdkModule:
 		// TODO(146757305): provide .apk and .aidl that have more APIs for modules
-		return toModule("android_module_lib_stubs_current", nonUpdatableFrameworkAidlPath(ctx))
+		return toModule("android_module_lib_stubs_current", "org.lineageos.platform-res", nonUpdatableFrameworkAidlPath(ctx))
 	case android.SdkSystemServer:
 		// TODO(146757305): provide .apk and .aidl that have more APIs for modules
-		return toModule("android_system_server_stubs_current", sdkFrameworkAidlPath(ctx))
+		return toModule("android_system_server_stubs_current", "org.lineageos.platform-res", sdkFrameworkAidlPath(ctx))
 	default:
 		panic(fmt.Errorf("invalid sdk %q", sdkVersion.Raw))
 	}
