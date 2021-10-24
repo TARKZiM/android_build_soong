@@ -686,7 +686,8 @@ func TestRuleBuilder_Build(t *testing.T) {
 		sbox := filepath.Join("out", "soong", "host", result.Config.PrebuiltOS(), "bin/sbox")
 		sandboxPath := shared.TempDirForOutDir("out/soong")
 
-		cmd := sbox + ` --sandbox-path ` + sandboxPath + ` --manifest ` + manifest
+		cmd := `rm -rf ` + outDir + `/gen && ` +
+			sbox + ` --sandbox-path ` + sandboxPath + ` --manifest ` + manifest
 		module := result.ModuleForTests("foo_sbox", "")
 		check(t, module.Output("gen/foo_sbox"), module.Output(rspFile2),
 			cmd, outFile, depFile, rspFile, rspFile2, false, []string{manifest}, []string{sbox})
@@ -701,7 +702,8 @@ func TestRuleBuilder_Build(t *testing.T) {
 		sbox := filepath.Join("out", "soong", "host", result.Config.PrebuiltOS(), "bin/sbox")
 		sandboxPath := shared.TempDirForOutDir("out/soong")
 
-		cmd := sbox + ` --sandbox-path ` + sandboxPath + ` --manifest ` + manifest
+		cmd := `rm -rf ` + outDir + `/gen && ` +
+			sbox + ` --sandbox-path ` + sandboxPath + ` --manifest ` + manifest
 
 		module := result.ModuleForTests("foo_sbox_inputs", "")
 		check(t, module.Output("gen/foo_sbox_inputs"), module.Output(rspFile2),
